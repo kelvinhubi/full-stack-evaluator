@@ -27,6 +27,23 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 var app = builder.Build();
 
+// Seed database with default user
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.EnsureCreated();
+
+    // Add default user if not exists
+    if (!context.Users.Any())
+    {
+        context.Users.Add(new task_manager_api.Models.User
+        {
+            Email = "default@example.com",
+            PasswordHash = "default" // In production, use proper hashing
+        });
+        context.SaveChanges();
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
