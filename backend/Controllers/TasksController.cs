@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using task_manager_api.Models;
 using task_manager_api.Data;
 using task_manager_api.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace task_manager_api.Controllers
 {
     [Route("tasks")]
     [ApiController]
+    [Authorize]
     public class TasksController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -19,12 +22,21 @@ namespace task_manager_api.Controllers
             _context = context;
         }
 
+        private int GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.Parse(userIdClaim ?? "0");
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             try
             {
-                var tasks = await _context.Tasks.ToListAsync();
+                var userId = GetCurrentUserId();
+                var tasks = await _context.Tasks
+                    .Where(t => t.UserId == userId)
+                    .ToListAsync();
                 return Ok(tasks);
             }
             catch (Exception ex)
@@ -43,11 +55,12 @@ namespace task_manager_api.Controllers
 
             try
             {
+                var userId = GetCurrentUserId();
                 var task = new TaskItem
                 {
                     Title = createDto.Title,
                     IsDone = createDto.IsDone,
-                    UserId = 1 // Default user for now
+                    UserId = userId
                 };
 
                 _context.Tasks.Add(task);
@@ -70,10 +83,17 @@ namespace task_manager_api.Controllers
 
             try
             {
+                var userId = GetCurrentUserId();
                 var task = await _context.Tasks.FindAsync(id);
                 if (task == null)
                 {
                     return NotFound(new { message = $"Task with ID {id} not found" });
+                }
+
+                // Ensure user owns this task
+                if (task.UserId != userId)
+                {
+                    return Forbid();
                 }
 
                 task.Title = updateDto.Title;
@@ -93,10 +113,17 @@ namespace task_manager_api.Controllers
         {
             try
             {
+                var userId = GetCurrentUserId();
                 var task = await _context.Tasks.FindAsync(id);
                 if (task == null)
                 {
                     return NotFound(new { message = $"Task with ID {id} not found" });
+                }
+
+                // Ensure user owns this task
+                if (task.UserId != userId)
+                {
+                    return Forbid();
                 }
 
                 _context.Tasks.Remove(task);

@@ -45,3 +45,11 @@ Database Issues:
 
 No connection string configuration visible
 Need to verify PostgreSQL connection
+
+
+
+
+//User login and registration not implemented
+- Missing Create task functionality
+- Missing Update task functionality
+- Missing Delete task functionality
