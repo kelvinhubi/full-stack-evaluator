@@ -7,6 +7,7 @@ using task_manager_api.Data;
 using task_manager_api.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using task_manager_api.Services;
 
 namespace task_manager_api.Controllers
 {
@@ -15,28 +16,20 @@ namespace task_manager_api.Controllers
     [Authorize]
     public class TasksController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ITaskService _context;
 
-        public TasksController(ApplicationDbContext context)
+        public TasksController(ITaskService context)
         {
             _context = context;
         }
 
-        private int GetCurrentUserId()
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return int.Parse(userIdClaim ?? "0");
-        }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             try
             {
-                var userId = GetCurrentUserId();
-                var tasks = await _context.Tasks
-                    .Where(t => t.UserId == userId)
-                    .ToListAsync();
+                var tasks = await _context.Get();
                 return Ok(tasks);
             }
             catch (Exception ex)
@@ -52,20 +45,10 @@ namespace task_manager_api.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             try
             {
-                var userId = GetCurrentUserId();
-                var task = new TaskItem
-                {
-                    Title = createDto.Title,
-                    IsDone = createDto.IsDone,
-                    UserId = userId
-                };
-
-                _context.Tasks.Add(task);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(Get), new { id = task.Id }, task);
+                var result = await _context.Create(createDto);
+                return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
             }
             catch (Exception ex)
             {
@@ -83,23 +66,7 @@ namespace task_manager_api.Controllers
 
             try
             {
-                var userId = GetCurrentUserId();
-                var task = await _context.Tasks.FindAsync(id);
-                if (task == null)
-                {
-                    return NotFound(new { message = $"Task with ID {id} not found" });
-                }
-
-                // Ensure user owns this task
-                if (task.UserId != userId)
-                {
-                    return Forbid();
-                }
-
-                task.Title = updateDto.Title;
-                task.IsDone = updateDto.IsDone;
-                await _context.SaveChangesAsync();
-
+                var task = await _context.Update(id, updateDto);
                 return Ok(task);
             }
             catch (Exception ex)
@@ -113,22 +80,7 @@ namespace task_manager_api.Controllers
         {
             try
             {
-                var userId = GetCurrentUserId();
-                var task = await _context.Tasks.FindAsync(id);
-                if (task == null)
-                {
-                    return NotFound(new { message = $"Task with ID {id} not found" });
-                }
-
-                // Ensure user owns this task
-                if (task.UserId != userId)
-                {
-                    return Forbid();
-                }
-
-                _context.Tasks.Remove(task);
-                await _context.SaveChangesAsync();
-
+                await _context.Delete(id);
                 return NoContent();
             }
             catch (Exception ex)

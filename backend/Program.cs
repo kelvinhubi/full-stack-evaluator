@@ -4,6 +4,7 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using task_manager_api.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,12 @@ Env.Load();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add HttpContextAccessor for accessing HttpContext in services
+builder.Services.AddHttpContextAccessor();
+
+// Register services
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 // Add CORS policy
 builder.Services.AddCors(options =>
