@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from "./api/axios";
 import CrudTask from './crudTask';
+import './Tasks.css';
 
 function Tasks() {
   const [tasks, setTasks] = useState([]);
