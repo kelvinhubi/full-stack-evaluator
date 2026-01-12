@@ -42,8 +42,7 @@ function Tasks() {
     try {
       const response = await api.post('/tasks', {
         title: newTaskTitle.trim(),
-        isDone: false,
-        userId: 1 // Default user ID for now
+        isDone: false
       });
       setTasks([...tasks, response.data]);
       setNewTaskTitle('');

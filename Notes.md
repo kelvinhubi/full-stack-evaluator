@@ -25,7 +25,7 @@ No loading spinners
 Task status toggle (mark as done/undone)
 
 
-Backend: 
+Backend: // checked
 
 CORS Configuration - Backend lacks CORS policy
 
