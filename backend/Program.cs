@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using TaskManager.Data;
+using task_manager_api.Data;
+using DotNetEnv;
 
-DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-
+Env.Load();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -23,7 +23,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Enable serving static files from wwwroot
+app.UseStaticFiles();
+
+// Enable default files (index.html)
+app.UseDefaultFiles();
+
 app.MapControllers();
 
-app.Run();
+// Fallback route for SPA - serves index.html for any unmatched routes
+app.MapFallbackToFile("index.html");
 
+app.Run();

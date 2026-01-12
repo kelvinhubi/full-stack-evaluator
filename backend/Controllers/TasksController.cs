@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-using TaskManager.Models;
-using TaskManager.Data;
-namespace TaskManager.API
+using task_manager_api.Models;
+using task_manager_api.Data;
+namespace task_manager_api.Controllers
 {
     [Route("tasks")]
     [ApiController]

@@ -1,6 +1,5 @@
 import './App.css'
 import Tasks from "./Tasks"
-
 function App() {
   return (
     <div className="app">
@@ -9,5 +8,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App
