@@ -4,13 +4,13 @@ frontend:
 connection in frontend to backend API
 .env.production file in frontend is missing the API URL//checked 
 
-crudTask.jsx: 
+crudTask.jsx: //checked
 - Completely empty file
 - Should contain Create, Update, Delete task functionality
 - Form for adding new tasks
 - Edit/Delete buttons for existing tasks
 - Tasks.jsx - Only shows tasks (Read-only)
-Tasks.jsx:
+Tasks.jsx: //checked
 - Missing Create task functionality
 - Missing Update task functionality
 - Missing Delete task functionality
