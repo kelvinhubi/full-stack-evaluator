@@ -48,8 +48,11 @@ Need to verify PostgreSQL connection
 
 
 
-
-//User login and registration not implemented
-- Missing Create task functionality
-- Missing Update task functionality
-- Missing Delete task functionality
+//checked 
+User login and registration implemented
+JWT token-based authentication
+Create task functionality
+Update task functionality  
+Delete task functionality
+Protected routes with [Authorize] attribute
+User-specific task management
